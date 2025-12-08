@@ -17,8 +17,8 @@ import { AuthModule } from './modules/auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    // MongooseModule.forRoot(process.env.MONGODB_CONNECTION_URI as string),
-    MongooseModule.forRoot('mongodb://localhost:27017/TripGO'),
+    MongooseModule.forRoot(process.env.MONGODB_CONNECTION_URI as string),
+    // MongooseModule.forRoot('mongodb://localhost:27017/TripGO'),
     UserModule,
     BookingModule,
     TicketModule,
