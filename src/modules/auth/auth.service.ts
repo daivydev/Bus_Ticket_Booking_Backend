@@ -51,11 +51,13 @@ export class AuthService {
     const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
     await this.userModel.findByIdAndUpdate(user._id, { refreshToken });
-
-    return {
-      accessToken,
-      refreshToken,
-    };
+    const {
+      password,
+      refreshToken: userRefreshToken,
+      accessToken: userAccessToken,
+      ...userInfo
+    } = user;
+    return { user: userInfo, accessToken, refreshToken };
   }
 
   async refreshTokens(refreshToken: string) {

@@ -17,15 +17,15 @@ import { AuthModule } from './modules/auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_CONNECTION_URI'),
-        dbName: 'TripGO',
-      }),
-      inject: [ConfigService],
-    }),
-    // MongooseModule.forRoot('mongodb://localhost:27017/TripGO'),
+    // MongooseModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   useFactory: async (configService: ConfigService) => ({
+    //     uri: configService.get<string>('MONGODB_CONNECTION_URI'),
+    //     dbName: 'TripGO',
+    //   }),
+    //   inject: [ConfigService],
+    // }),
+    MongooseModule.forRoot('mongodb://localhost:27017/TripGO'),
     UserModule,
     BookingModule,
     TicketModule,
