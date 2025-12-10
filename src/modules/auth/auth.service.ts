@@ -91,7 +91,9 @@ export class AuthService {
       return userObject;
     } catch (error) {
       if (error.code === 11000) {
-        throw new ConflictException('Email này đã được đăng ký.');
+        throw new ConflictException(
+          'User with this email/phone already exists.',
+        );
       }
       throw error;
     }
