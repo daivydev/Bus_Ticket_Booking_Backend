@@ -7,31 +7,37 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from 'src/modules/user/dto/CreateUser.dto';
 import { UpdateUserDto } from 'src/modules/user/dto/UpdateUser.dto';
-import { User } from 'src/modules/user/user.schema';
+import { User, UserDocument } from 'src/modules/user/user.schema';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name)
-    private userModel: Model<User>,
+    private userModel: Model<UserDocument>,
   ) {}
-  // findAll
-  getAll(): Promise<User[]> {
-    return this.userModel.find();
+  private prepareUserResponse(user: UserDocument): Omit<User, 'password'> {
+    const userObject: any = user.toObject({ getters: true });
+    delete userObject.password;
+    return userObject as Omit<User, 'password'>;
   }
-  // getById
-  async getById(id: string) {
-    const user = await this.userModel.findById(id);
+
+  async getAll(): Promise<Omit<User, 'password'>[]> {
+    const users = await this.userModel.find().exec();
+    return users.map((user) => this.prepareUserResponse(user));
+  }
+
+  async getById(id: string): Promise<Omit<User, 'password'>> {
+    const user = await this.userModel.findById(id).exec();
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return user;
+    return this.prepareUserResponse(user);
   }
-  // create
-  async create(userData: CreateUserDto) {
+
+  async create(userData: CreateUserDto): Promise<Omit<User, 'password'>> {
     try {
-      const salt = await bcrypt.genSalt();
+      const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(
         userData.password as string,
         salt,
@@ -41,46 +47,63 @@ export class UserService {
         password: hashedPassword,
       });
       const user = await createdUser.save();
-      let userObject: any = user.toObject();
-      delete userObject.password;
-      return userObject;
+      return this.prepareUserResponse(user);
     } catch (error) {
-      // Mã lỗi 11000 là lỗi MongoDB cho Duplicated Key
       if (error.code === 11000) {
-        // Ném ConflictException ngay tại Service
         throw new ConflictException(
-          'User with this email/username already exists.',
+          'User with this email/phone already exists.',
         );
       }
-      // Ném lại các lỗi khác để NestJS xử lý (có thể là 500)
       throw error;
     }
   }
-  // updateById
-  async update(id: string, userData: Partial<UpdateUserDto>) {
-    const updatedUser = await this.userModel.findByIdAndUpdate(id, userData, {
-      new: true,
-    });
+
+  async update(
+    id: string,
+    userData: UpdateUserDto,
+  ): Promise<Omit<User, 'password'>> {
+    let updateData = { ...userData };
+    if (userData.password) {
+      const salt = await bcrypt.genSalt(10);
+      updateData = {
+        ...updateData,
+        password: await bcrypt.hash(userData.password, salt),
+      };
+      delete updateData.password;
+    }
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(id, updateData, {
+        new: true,
+        runValidators: true,
+      })
+      .exec();
     if (!updatedUser) {
       throw new NotFoundException('User Not Found');
     }
-    return updatedUser;
+    return this.prepareUserResponse(updatedUser);
   }
 
-  // deleteById
-  async delete(id: string) {
-    const user = await this.userModel.findByIdAndDelete(id);
-    if (!user) {
+  async delete(id: string): Promise<{ message: string }> {
+    // const bookingsCount = await this.bookingModel.countDocuments({ user_id: id }).exec();
+    // if (bookingsCount > 0) {
+    //     throw new ConflictException(`Không thể xóa người dùng. Vẫn còn ${bookingsCount} đơn đặt vé đang liên kết.`);
+    // }
+    const result = await this.userModel.deleteOne({ _id: id }).exec();
+    if (result.deletedCount === 0) {
       throw new NotFoundException('User not found');
     }
-    return user;
+
+    return { message: 'Account has been deleted.' };
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<UserDocument> {
     const user = await this.userModel.findOne({ email: email }).exec();
     if (!user) {
       throw new NotFoundException('User not found');
     }
     return user;
+  }
+  async exists(id: string): Promise<boolean> {
+    return (await this.userModel.exists({ _id: id })) !== null;
   }
 }

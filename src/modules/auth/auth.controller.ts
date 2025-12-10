@@ -35,7 +35,7 @@ export class AuthController {
 
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+    return this.authService.signUp(createUserDto);
   }
 
   @UseGuards(JwtAuthGuard)
