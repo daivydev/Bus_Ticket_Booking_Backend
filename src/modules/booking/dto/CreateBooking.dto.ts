@@ -22,7 +22,6 @@ export class IsDifferentStopsConstraint implements ValidatorConstraintInterface 
     return 'The pickup and drop-off points must not be the same.';
   }
 }
-
 export class CreateBookingDto {
   @IsMongoId()
   @IsNotEmpty()

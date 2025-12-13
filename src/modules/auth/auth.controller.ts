@@ -47,7 +47,7 @@ export class AuthController {
     };
   }
 
-  @Post('refresh')
+  @Post('refresh-token')
   async refreshTokens(@Body('refreshToken') refreshToken: string) {
     // Gọi hàm mới trong AuthService
     return this.authService.refreshTokens(refreshToken);

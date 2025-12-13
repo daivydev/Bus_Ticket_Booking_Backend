@@ -30,20 +30,18 @@ export class TripRouteController {
   constructor(private readonly tripRouteService: TripRouteService) {}
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getAllRoutes(): Promise<Route[]> {
+  async getAllRoutes() {
     return this.tripRouteService.getAll();
   }
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async getRouteById(
-    @Param('id', ParseObjectIdPipe) id: string,
-  ): Promise<Route> {
+  async getRouteById(@Param('id', ParseObjectIdPipe) id: string) {
     return this.tripRouteService.getById(id);
   }
   @Post()
   @Roles(Role.Admin)
   @HttpCode(HttpStatus.CREATED)
-  async createRoute(@Body() createRouteDto: CreateRouteDto): Promise<Route> {
+  async createRoute(@Body() createRouteDto: CreateRouteDto) {
     return this.tripRouteService.create(createRouteDto);
   }
   @Patch(':id')
@@ -52,7 +50,7 @@ export class TripRouteController {
   async updateRoute(
     @Param('id', ParseObjectIdPipe) id: string,
     @Body() updateRouteDto: UpdateRouteDto,
-  ): Promise<Route> {
+  ) {
     return this.tripRouteService.update(id, updateRouteDto);
   }
   @Delete(':id')
