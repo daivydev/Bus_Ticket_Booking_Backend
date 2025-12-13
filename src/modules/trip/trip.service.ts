@@ -32,15 +32,25 @@ export class TripService {
     return (await this.tripModel.exists({ _id: id })) !== null;
   }
 
-  async getAll(): Promise<TripDocument[]> {
-    return this.tripModel.find().populate('routeId').populate('busId').exec();
+  async getAll() {
+    return this.tripModel
+      .find()
+      .populate({
+        path: 'routeId',
+        populate: [{ path: 'departureCityId' }, { path: 'destinationCityId' }],
+      })
+      .populate('busId')
+      .exec();
   }
 
-  async getById(id: string): Promise<TripDocument> {
+  async getById(id: string) {
     const trip = await this.tripModel
       .findById(id)
       .populate('busId')
-      .populate('routeId')
+      .populate({
+        path: 'routeId',
+        populate: [{ path: 'departureCityId' }, { path: 'destinationCityId' }],
+      })
       .exec();
     if (!trip) {
       throw new NotFoundException(`Trip with ID ${id} not found.`);
@@ -79,7 +89,7 @@ export class TripService {
     }
   }
 
-  async create(tripData: CreateTripDto): Promise<TripDocument> {
+  async create(tripData: CreateTripDto) {
     const [routeExists, busExists] = await Promise.all([
       this.routeService.exists(tripData.routeId),
       this.busService.exists(tripData.busId),
@@ -103,7 +113,7 @@ export class TripService {
     return await newTrip.save();
   }
 
-  async update(id: string, tripData: UpdateTripDto): Promise<TripDocument> {
+  async update(id: string, tripData: UpdateTripDto) {
     // Lấy chuyến đi hiện tại để kiểm tra xung đột nếu các trường không được cung cấp
     const existingTrip = await this.tripModel.findById(id).exec();
     if (!existingTrip) {

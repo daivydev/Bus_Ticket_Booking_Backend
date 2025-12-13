@@ -29,7 +29,7 @@ export class BusStopController {
   constructor(private readonly busStopSerVice: BusStopService) {}
   @Get()
   @HttpCode(HttpStatus.OK)
-  getAllBusStop(): Promise<BusStop[]> {
+  getAllBusStop() {
     return this.busStopSerVice.getAll();
   }
   @Get('/:id')

@@ -29,24 +29,20 @@ export class TripController {
   constructor(private readonly tripService: TripService) {}
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getAllTrips(): Promise<TripDocument[]> {
+  async getAllTrips() {
     return this.tripService.getAll();
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async getTripById(
-    @Param('id', ParseObjectIdPipe) id: string,
-  ): Promise<TripDocument> {
+  async getTripById(@Param('id', ParseObjectIdPipe) id: string) {
     return this.tripService.getById(id);
   }
 
   @Post()
   @Roles(Role.Admin)
   @HttpCode(HttpStatus.CREATED)
-  async createTrip(
-    @Body() createTripDto: CreateTripDto,
-  ): Promise<TripDocument> {
+  async createTrip(@Body() createTripDto: CreateTripDto) {
     return this.tripService.create(createTripDto);
   }
 
@@ -56,7 +52,7 @@ export class TripController {
   async updateTrip(
     @Param('id', ParseObjectIdPipe) id: string,
     @Body() updateTripDto: UpdateTripDto,
-  ): Promise<TripDocument> {
+  ) {
     return this.tripService.update(id, updateTripDto);
   }
 

@@ -21,11 +21,19 @@ export class TripRouteService {
   ) {}
 
   getAll(): Promise<Route[]> {
-    return this.routeModel.find();
+    return this.routeModel
+      .find()
+      .populate('departureCityId')
+      .populate('destinationCityId')
+      .exec();
   }
 
   async getById(id: string) {
-    const route = await this.routeModel.findById(id);
+    const route = await this.routeModel
+      .findById(id)
+      .populate('departureCityId')
+      .populate('destinationCityId')
+      .exec();
     if (!route) {
       throw new NotFoundException('Route Not Found');
     }
@@ -57,7 +65,14 @@ export class TripRouteService {
 
     try {
       const newroute = new this.routeModel(routeData);
-      return await newroute.save();
+      const savedRoute = await newroute.save();
+      const populatedRoute = await this.routeModel
+        .findById(savedRoute._id)
+        .populate('departureCityId')
+        .populate('destinationCityId')
+        .exec();
+
+      return populatedRoute;
     } catch (error) {
       if (error.code === 11000)
         throw new ConflictException('Route already exists.');
@@ -66,11 +81,42 @@ export class TripRouteService {
   }
 
   async update(id: string, routeData: UpdateRouteDto) {
+    if (
+      routeData.departureCityId &&
+      routeData.destinationCityId &&
+      routeData.departureCityId === routeData.destinationCityId
+    ) {
+      throw new BadRequestException(
+        'Departure and destination cities cannot be the same.',
+      );
+    }
+    if (routeData.departureCityId) {
+      const depCityExists = await this.cityService.exists(
+        routeData.departureCityId,
+      );
+      if (!depCityExists) {
+        throw new NotFoundException(
+          `Departure City (ID: ${routeData.departureCityId}) Not Found.`,
+        );
+      }
+    }
+
+    if (routeData.destinationCityId) {
+      const destCityExists = await this.cityService.exists(
+        routeData.destinationCityId,
+      );
+      if (!destCityExists) {
+        throw new NotFoundException(
+          `Destination City (ID: ${routeData.destinationCityId}) Not Found.`,
+        );
+      }
+    }
     const updatedroute = await this.routeModel.findByIdAndUpdate(
       id,
       routeData,
       {
         new: true,
+        populate: [{ path: 'departureCityId' }, { path: 'destinationCityId' }],
       },
     );
     if (!updatedroute) {

@@ -19,11 +19,11 @@ export class BusStopService {
     private cityService: CityService,
   ) {}
   getAll(): Promise<BusStop[]> {
-    return this.busStopModel.find();
+    return this.busStopModel.find().populate('cityId');
   }
 
   async getById(id: string) {
-    const busStop = await this.busStopModel.findById(id);
+    const busStop = await this.busStopModel.findById(id).populate('cityId');
     if (!busStop) {
       throw new NotFoundException('Bus Stop Not Found');
     }

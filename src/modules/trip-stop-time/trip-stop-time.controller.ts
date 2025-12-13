@@ -22,29 +22,25 @@ import { UpdateTripStopTimeDto } from 'src/modules/trip-stop-time/dto/UpdateTrip
 import { TripStopTimeDocument } from 'src/modules/trip-stop-time/trip-stop-time.schema';
 import { TripStopTimeService } from 'src/modules/trip-stop-time/trip-stop-time.service';
 
-@Controller('trip-stop-time')
+@Controller('trip-stop-times')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 export class TripStopTimeController {
   constructor(private readonly tripStopTimeService: TripStopTimeService) {}
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getAllTripStopTimes(): Promise<TripStopTimeDocument[]> {
+  async getAllTripStopTimes() {
     return this.tripStopTimeService.getAll();
   }
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async getTripStopTimeById(
-    @Param('id', ParseObjectIdPipe) id: string,
-  ): Promise<TripStopTimeDocument> {
+  async getTripStopTimeById(@Param('id', ParseObjectIdPipe) id: string) {
     return this.tripStopTimeService.getById(id);
   }
   @Post()
   @Roles(Role.Admin)
   @HttpCode(HttpStatus.CREATED)
-  async createTripStopTime(
-    @Body() createDto: CreateTripStopTimeDto,
-  ): Promise<TripStopTimeDocument> {
+  async createTripStopTime(@Body() createDto: CreateTripStopTimeDto) {
     return this.tripStopTimeService.create(createDto);
   }
   @Patch(':id')
@@ -53,7 +49,7 @@ export class TripStopTimeController {
   async updateTripStopTime(
     @Param('id', ParseObjectIdPipe) id: string,
     @Body() updateDto: UpdateTripStopTimeDto,
-  ): Promise<TripStopTimeDocument> {
+  ) {
     return this.tripStopTimeService.update(id, updateDto);
   }
   @Delete(':id')

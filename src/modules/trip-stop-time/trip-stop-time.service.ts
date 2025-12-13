@@ -66,7 +66,7 @@ export class TripStopTimeService {
         scheduledTime.getTime() === arrivalTime.getTime())
     ) {
       throw new BadRequestException(
-        'The stopover time must not coincide with the departure or arrival time of the trip.',
+        'The stop over time must not coincide with the departure or arrival time of the trip.',
       );
     }
   }
