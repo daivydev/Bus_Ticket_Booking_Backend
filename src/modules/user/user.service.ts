@@ -17,7 +17,7 @@ export class UserService {
     private userModel: Model<UserDocument>,
   ) {}
   private prepareUserResponse(user: UserDocument): Omit<User, 'password'> {
-    const userObject: any = user.toObject({ getters: true });
+    const userObject: any = user.toObject();
     delete userObject.password;
     return userObject as Omit<User, 'password'>;
   }
