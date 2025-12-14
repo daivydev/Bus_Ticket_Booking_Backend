@@ -14,10 +14,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      // 'https://ten-mien-frontend-cua-ban.com',
-    ],
+    origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Các phương thức được phép
     credentials: true, // Cho phép truyền cookie và Authorization header
   });
