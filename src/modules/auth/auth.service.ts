@@ -48,14 +48,16 @@ export class AuthService {
       email: user.email,
       sub: user._id,
     };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '60m' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
     await this.userModel.findByIdAndUpdate(user._id, { refreshToken });
-
-    return {
-      accessToken,
-      refreshToken,
-    };
+    const {
+      password,
+      refreshToken: userRefreshToken,
+      accessToken: userAccessToken,
+      ...userInfo
+    } = user;
+    return { user: userInfo, accessToken, refreshToken };
   }
 
   async refreshTokens(refreshToken: string) {
@@ -89,7 +91,9 @@ export class AuthService {
       return userObject;
     } catch (error) {
       if (error.code === 11000) {
-        throw new ConflictException('Email này đã được đăng ký.');
+        throw new ConflictException(
+          'User with this email/phone already exists.',
+        );
       }
       throw error;
     }

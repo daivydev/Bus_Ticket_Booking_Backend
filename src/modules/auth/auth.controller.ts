@@ -35,7 +35,7 @@ export class AuthController {
 
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+    return this.authService.signUp(createUserDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -47,7 +47,7 @@ export class AuthController {
     };
   }
 
-  @Post('refresh')
+  @Post('refresh-token')
   async refreshTokens(@Body('refreshToken') refreshToken: string) {
     // Gọi hàm mới trong AuthService
     return this.authService.refreshTokens(refreshToken);

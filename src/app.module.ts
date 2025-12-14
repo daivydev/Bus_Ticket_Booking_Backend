@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './modules/user/user.module';
 import { BookingModule } from './modules/booking/booking.module';
@@ -17,8 +17,15 @@ import { AuthModule } from './modules/auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    // MongooseModule.forRoot(process.env.MONGODB_CONNECTION_URI as string),
-    MongooseModule.forRoot('mongodb://localhost:27017/TripGO'),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_CONNECTION_URI'),
+        dbName: 'TripGO',
+      }),
+      inject: [ConfigService],
+    }),
+    // MongooseModule.forRoot('mongodb://localhost:27017/TripGO'),
     UserModule,
     BookingModule,
     TicketModule,

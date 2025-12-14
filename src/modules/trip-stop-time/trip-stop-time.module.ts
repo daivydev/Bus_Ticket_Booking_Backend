@@ -1,9 +1,24 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TripStopTimeService } from './trip-stop-time.service';
 import { TripStopTimeController } from './trip-stop-time.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import {
+  TripStopTime,
+  TripStopTimeSchema,
+} from 'src/modules/trip-stop-time/trip-stop-time.schema';
+import { TripModule } from 'src/modules/trip/trip.module';
+import { BusStopModule } from 'src/modules/bus-stop/bus-stop.module';
 
 @Module({
+  imports: [
+    MongooseModule.forFeature([
+      { name: TripStopTime.name, schema: TripStopTimeSchema },
+    ]),
+    forwardRef(() => TripModule),
+    forwardRef(() => BusStopModule),
+  ],
   providers: [TripStopTimeService],
-  controllers: [TripStopTimeController]
+  controllers: [TripStopTimeController],
+  exports: [TripStopTimeService],
 })
 export class TripStopTimeModule {}

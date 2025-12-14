@@ -9,11 +9,12 @@ import {
   UsePipes,
   ValidationPipe,
   UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
 import { CreateUserDto } from 'src/modules/user/dto/CreateUser.dto';
 import { UpdateUserDto } from 'src/modules/user/dto/UpdateUser.dto';
-import { User } from 'src/modules/user/user.schema';
 import { UserService } from 'src/modules/user/user.service';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/modules/auth/roles.guard';
@@ -21,30 +22,32 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/roles.enum';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
+@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  // lấy danh sách user
   @Get()
-  getAllUser(): Promise<User[]> {
+  @Roles(Role.Admin)
+  @HttpCode(HttpStatus.OK)
+  getAllUser() {
     return this.userService.getAll();
   }
 
-  // /users/id lấy user theo id
   @Get('/:id')
+  @HttpCode(HttpStatus.OK)
   async getUserById(@Param('id', ParseObjectIdPipe) id: string) {
     return this.userService.getById(id);
   }
 
-  // tạo mới user
   @Post()
+  @Roles(Role.Admin)
+  @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
-  // cập nhật user
   @Patch('/:id')
-  @UsePipes(new ValidationPipe())
+  @HttpCode(HttpStatus.OK)
   async updateUser(
     @Param('id', ParseObjectIdPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -52,11 +55,10 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
-  // /users/id xóa user
   @Delete('/:id')
   @Roles(Role.Admin)
+  @HttpCode(204)
   async deleteUser(@Param('id', ParseObjectIdPipe) id: string) {
     await this.userService.delete(id);
-    return;
   }
 }
