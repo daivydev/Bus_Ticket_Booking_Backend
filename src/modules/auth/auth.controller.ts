@@ -8,6 +8,7 @@ import {
   Request,
   UnauthorizedException,
   Headers,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
@@ -28,7 +29,7 @@ export class AuthController {
       loginDto.password,
     );
     if (!user) {
-      throw new UnauthorizedException('Thông tin đăng nhập không hợp lệ.');
+      throw new BadRequestException('Email hoặc mật khẩu không đúng.');
     }
     return this.authService.login(user);
   }
