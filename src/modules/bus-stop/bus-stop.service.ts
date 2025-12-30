@@ -10,12 +10,18 @@ import { BusStop, BusStopDocument } from 'src/modules/bus-stop/bus-stop.schema';
 import { CreateBusStopDto } from 'src/modules/bus-stop/dto/CreateBusStop.dto';
 import { UpdateBusStopDto } from 'src/modules/bus-stop/dto/UpdateBusStop.dto';
 import { CityService } from 'src/modules/city/city.service';
+import {
+  TripStopTime,
+  TripStopTimeDocument,
+} from 'src/modules/trip-stop-time/trip-stop-time.schema';
 
 @Injectable()
 export class BusStopService {
   constructor(
     @InjectModel(BusStop.name) private busStopModel: Model<BusStopDocument>,
     @InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
+    @InjectModel(TripStopTime.name)
+    private tripStopTimeModel: Model<TripStopTimeDocument>,
     private cityService: CityService,
   ) {}
   getAll(): Promise<BusStop[]> {
@@ -42,26 +48,41 @@ export class BusStopService {
   }
 
   async update(id: string, busStopData: UpdateBusStopDto) {
-    const updatedBusStop = await this.busStopModel.findByIdAndUpdate(
-      id,
-      busStopData,
-      {
-        new: true,
-      },
-    );
-    if (!updatedBusStop) {
-      throw new NotFoundException('Bus Stop Not Found');
+    try {
+      const updatedBusStop = await this.busStopModel.findByIdAndUpdate(
+        id,
+        busStopData,
+        {
+          new: true,
+        },
+      );
+      if (!updatedBusStop) {
+        throw new NotFoundException('Bus Stop Not Found');
+      }
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new ConflictException('Bus Stop already exists.');
+      }
+      throw error;
     }
-    return updatedBusStop;
   }
 
   async delete(id: string): Promise<{ message: string }> {
     const bookingCounts = await this.bookingModel
-      .countDocuments({ city_id: id })
+      .countDocuments({ cityId: id })
       .exec();
     if (bookingCounts > 0) {
       throw new ConflictException(
         `Cannot delete this bus stop. There are still ${bookingCounts} booking using this bus stop.`,
+      );
+    }
+
+    const tripStopTimeCounts = await this.tripStopTimeModel
+      .countDocuments({ stopId: id })
+      .exec();
+    if (tripStopTimeCounts > 0) {
+      throw new ConflictException(
+        `Cannot delete this bus stop. There are still ${tripStopTimeCounts} tripStopTime using this bus stop.`,
       );
     }
 

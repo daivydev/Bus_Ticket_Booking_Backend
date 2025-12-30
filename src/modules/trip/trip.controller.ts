@@ -11,6 +11,7 @@ import {
   UsePipes,
   ValidationPipe,
   UseGuards,
+  Patch,
 } from '@nestjs/common';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
 import { TripService } from './trip.service';
@@ -46,7 +47,7 @@ export class TripController {
     return this.tripService.create(createTripDto);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @Roles(Role.Admin)
   @HttpCode(HttpStatus.OK)
   async updateTrip(

@@ -43,13 +43,19 @@ export class CityService {
   }
 
   async update(id: string, cityData: UpdateCityDto) {
-    const updatedCity = await this.cityModel.findByIdAndUpdate(id, cityData, {
-      new: true,
-    });
-    if (!updatedCity) {
-      throw new NotFoundException('City Not Found');
+    try {
+      const updatedCity = await this.cityModel.findByIdAndUpdate(id, cityData, {
+        new: true,
+      });
+      if (!updatedCity) {
+        throw new NotFoundException('City Not Found');
+      }
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new ConflictException('City already exists.');
+      }
+      throw error;
     }
-    return updatedCity;
   }
 
   async delete(id: string): Promise<{ message: string }> {

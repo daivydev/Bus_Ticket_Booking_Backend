@@ -39,18 +39,27 @@ export class BusService {
   }
 
   async update(id: string, busData: UpdateBusDto) {
-    const updatedbus = await this.busModel.findByIdAndUpdate(id, busData, {
-      new: true,
-    });
-    if (!updatedbus) {
-      throw new NotFoundException('Bus Not Found');
+    try {
+      const updatedbus = await this.busModel.findByIdAndUpdate(id, busData, {
+        new: true,
+      });
+      if (!updatedbus) {
+        throw new NotFoundException('Bus Not Found');
+      }
+      return updatedbus;
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new ConflictException(
+          'License plate already exists on another bus.',
+        );
+      }
+      throw error;
     }
-    return updatedbus;
   }
 
   async delete(id: string): Promise<{ message: string }> {
     const tripsCount = await this.tripModel
-      .countDocuments({ bus_id: id })
+      .countDocuments({ busId: id })
       .exec();
     if (tripsCount > 0) {
       throw new ConflictException(
