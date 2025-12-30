@@ -111,18 +111,28 @@ export class TripRouteService {
         );
       }
     }
-    const updatedroute = await this.routeModel.findByIdAndUpdate(
-      id,
-      routeData,
-      {
-        new: true,
-        populate: [{ path: 'departureCityId' }, { path: 'destinationCityId' }],
-      },
-    );
-    if (!updatedroute) {
-      throw new NotFoundException('Route Not Found');
+
+    try {
+      const updatedroute = await this.routeModel.findByIdAndUpdate(
+        id,
+        routeData,
+        {
+          new: true,
+          populate: [
+            { path: 'departureCityId' },
+            { path: 'destinationCityId' },
+          ],
+        },
+      );
+      if (!updatedroute) {
+        throw new NotFoundException('Route Not Found');
+      }
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new ConflictException('Bus Stop already exists.');
+      }
+      throw error;
     }
-    return updatedroute;
   }
 
   async delete(id: string): Promise<{ message: string }> {

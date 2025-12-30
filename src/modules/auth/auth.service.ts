@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -48,7 +49,7 @@ export class AuthService {
       email: user.email,
       sub: user._id,
     };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '60m' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '1d' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
     await this.userModel.findByIdAndUpdate(user._id, { refreshToken });
     const {
@@ -61,9 +62,12 @@ export class AuthService {
   }
 
   async refreshTokens(refreshToken: string) {
+    if (!refreshToken)
+      throw new BadRequestException(
+        'Request without refresh token in payload!',
+      );
     // 1. Giải mã và xác minh Refresh Token
     const payload = this.jwtService.verify(refreshToken);
-
     // 2. Tìm người dùng trong DB và kiểm tra Refresh Token có khớp không
     const user = await this.userModel.findById(payload.sub);
     if (!user || user.refreshToken !== refreshToken) {
