@@ -24,60 +24,86 @@ import { Role } from 'src/common/enums/roles.enum';
 import { CheckoutDto } from 'src/modules/booking/dto/Checkout.dto';
 import { BookingStatus } from 'src/common/enums/booking.enum';
 import { Public } from 'src/common/decorators/public.decorator';
+import { Query, Req } from '@nestjs/common';
+import * as qs from 'qs';
 import * as crypto from 'crypto';
-
+import { VnpayService } from 'src/modules/vnpay/vnpay.service';
 @Controller('bookings')
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class BookingController {
-  constructor(private readonly bookingService: BookingService) {}
+  constructor(
+    private readonly bookingService: BookingService,
+    private readonly vnpayService: VnpayService,
+  ) {}
 
-  @Public() // bỏ qua kiểm tra JWT
-  @Post('checkout/momo-ipn')
-  @HttpCode(HttpStatus.OK)
-  async handleMomoIpn(@Body() body: any) {
-    const {
-      partnerCode,
-      orderId,
-      requestId,
-      amount,
-      orderInfo,
-      orderType,
-      transId,
-      resultCode,
-      message,
-      payType,
-      responseTime,
-      extraData,
-      signature,
-    } = body;
+  // @Public()
+  // @Get('checkout/vnpay-return')
+  // @HttpCode(HttpStatus.OK)
+  // async handleVnpayReturn(@Query() query: any) {
+  //   console.log('Đã nhận phản hồi từ VNPay');
 
-    // Tạo lại chữ ký từ dữ liệu nhận được để so sánh
-    const secretKey = process.env.MOMO_SECRET_KEY as string;
-    const rawSignature = `accessKey=${process.env.MOMO_ACCESS_KEY}&amount=${amount}&extraData=${extraData}&message=${message}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&requestId=${requestId}&responseTime=${responseTime}&resultCode=${resultCode}&transId=${transId}`;
+  //   const secretKey = process.env.VNP_HASH_SECRET;
+  //   let vnp_Params = { ...query };
+  //   const secureHash = vnp_Params['vnp_SecureHash'];
 
-    const checkSignature = crypto
-      .createHmac('sha256', secretKey)
-      .update(rawSignature)
-      .digest('hex');
+  //   // 1. Loại bỏ các tham số không dùng để tính toán chữ ký
+  //   delete vnp_Params['vnp_SecureHash'];
+  //   delete vnp_Params['vnp_SecureHashType'];
 
-    if (signature !== checkSignature) {
-      console.error('Chữ ký không hợp lệ! Có thể có yêu cầu giả mạo.');
-      return { message: 'Invalid Signature' };
-    }
+  //   // 2. Sắp xếp lại object theo Alphabet
+  //   // (Vì VNPay Service của bạn đã có hàm sortObject, hãy tận dụng nó)
+  //   vnp_Params = this.vnpayService['sortObject'](vnp_Params);
 
-    // Nếu chữ ký đúng, tiếp tục xử lý
-    const bookingId = orderId.split('_')[0];
-    if (resultCode === 0) {
-      await this.bookingService.updateStatus(bookingId, BookingStatus.Paid);
-    }
+  //   // 3. Tạo chuỗi băm để kiểm chứng (Dùng chuẩn encode: false như code mẫu VNPay)
+  //   const signData = qs.stringify(vnp_Params, { encode: false });
+  //   const hmac = crypto.createHmac('sha512', secretKey!);
+  //   const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
-    return { message: 'Success' };
-  }
+  //   // 4. So sánh chữ ký của bạn với chữ ký VNPay gửi về
+  //   if (secureHash === signed) {
+  //     const { vnp_ResponseCode, vnp_TxnRef } = query;
+  //     const bookingId = vnp_TxnRef.split('_')[0];
+
+  //     // Chỉ cập nhật DB nếu mã phản hồi là '00' (Thành công)
+  //     if (vnp_ResponseCode === '00') {
+  //       await this.bookingService.updateStatus(bookingId, BookingStatus.Paid);
+  //       return {
+  //         status: 'Success',
+  //         message: 'Thanh toán thành công và xác thực chữ ký khớp.',
+  //         bookingId,
+  //       };
+  //     } else {
+  //       return {
+  //         status: 'Fail',
+  //         message: 'Giao dịch thất bại tại cổng VNPay',
+  //         code: vnp_ResponseCode,
+  //       };
+  //     }
+  //   } else {
+  //     // Nếu chữ ký không khớp, tuyệt đối không cập nhật Database
+  //     return {
+  //       status: 'Fail',
+  //       message:
+  //         'Cảnh báo: Chữ ký không hợp lệ! Dữ liệu có thể đã bị can thiệp.',
+  //     };
+  //   }
+  // }
+
+  // @Post('checkout')
+  // @HttpCode(HttpStatus.OK)
+  // async checkout(@Body() checkoutDto: CheckoutDto, @Req() req: any) {
+  //   const ipAddress = req.ip === '::1' ? '127.0.0.1' : req.ip || '127.0.0.1';
+  //   return await this.bookingService.processCheckout(
+  //     checkoutDto,
+  //     ipAddress as string,
+  //   );
+  // }
 
   @Post('checkout')
   @HttpCode(HttpStatus.OK)
   async checkout(@Body() checkoutDto: CheckoutDto) {
+    // Không còn cần Request hay IPAddress cho cổng thanh toán ngoài
     return await this.bookingService.processCheckout(checkoutDto);
   }
 

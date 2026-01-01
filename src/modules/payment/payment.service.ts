@@ -37,33 +37,75 @@ export class PaymentService {
     return payment;
   }
 
-  async create(paymentData: CreatePaymentDto): Promise<PaymentDocument> {
-    const { bookingId, amountPaid } = paymentData;
+  // async create(paymentData: CreatePaymentDto): Promise<PaymentDocument> {
+  //   const { bookingId, amountPaid } = paymentData;
 
-    // Kiểm tra Booking tồn tại và chưa có giao dịch SUCCESS
+  //   // Kiểm tra Booking tồn tại và chưa có giao dịch SUCCESS
+  //   const booking = await this.bookingService.getById(bookingId);
+  //   if (!booking) {
+  //     throw new NotFoundException(`Booking ID (${bookingId}) Not Found.`);
+  //   }
+
+  //   // Kiểm tra số tiền
+  //   if (booking.totalAmount !== amountPaid) {
+  //     throw new BadRequestException(
+  //       `Amount paid (${amountPaid}) does not match booking total (${booking.totalAmount}).`,
+  //     );
+  //   }
+
+  //   // 3. Kiểm tra Booking đã được thanh toán chưa
+  //   if (booking.status === BookingStatus.Paid) {
+  //     throw new ConflictException(`Booking ID (${bookingId}) has been paid.`);
+  //   }
+
+  //   // Tạo bản ghi Payment
+  //   try {
+  //     const newPayment = new this.paymentModel(paymentData);
+  //     return await newPayment.save();
+  //   } catch (error) {
+  //     // Bắt lỗi unique constraint (nếu bookingId đã có bản ghi payment)
+  //     if (error.code === 11000) {
+  //       throw new ConflictException(
+  //         `A payment record already exists for Booking ID (${bookingId}).`,
+  //       );
+  //     }
+  //     throw error;
+  //   }
+  // }
+
+  // Xử lý Webhook hoặc Cổng thanh toán trả về
+
+  async create(paymentData: CreatePaymentDto): Promise<PaymentDocument> {
+    const { bookingId, amountPaid, paymentStatus } = paymentData;
+
+    // 1. Kiểm tra Booking tồn tại
     const booking = await this.bookingService.getById(bookingId);
     if (!booking) {
       throw new NotFoundException(`Booking ID (${bookingId}) Not Found.`);
     }
 
-    // Kiểm tra số tiền
+    // 2. Kiểm tra số tiền khớp với Booking
     if (booking.totalAmount !== amountPaid) {
       throw new BadRequestException(
         `Amount paid (${amountPaid}) does not match booking total (${booking.totalAmount}).`,
       );
     }
-
-    // 3. Kiểm tra Booking đã được thanh toán chưa
-    if (booking.status === BookingStatus.Paid) {
-      throw new ConflictException(`Booking ID (${bookingId}) has been paid.`);
+    if (
+      paymentStatus !== PaymentStatus.Success &&
+      booking.status === BookingStatus.Paid
+    ) {
+      throw new ConflictException(
+        `Booking ID (${bookingId}) has already been paid.`,
+      );
     }
 
-    // Tạo bản ghi Payment
     try {
       const newPayment = new this.paymentModel(paymentData);
-      return await newPayment.save();
+      console.log(newPayment);
+      const res = await newPayment.save();
+      console.log('luu thanh cong payment');
+      return res;
     } catch (error) {
-      // Bắt lỗi unique constraint (nếu bookingId đã có bản ghi payment)
       if (error.code === 11000) {
         throw new ConflictException(
           `A payment record already exists for Booking ID (${bookingId}).`,
@@ -73,7 +115,6 @@ export class PaymentService {
     }
   }
 
-  // Xử lý Webhook hoặc Cổng thanh toán trả về
   async update(
     id: string,
     updateData: UpdatePaymentDto,

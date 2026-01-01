@@ -11,6 +11,7 @@ import { UserModule } from 'src/modules/user/user.module';
 import { PaymentModule } from 'src/modules/payment/payment.module';
 import { HttpModule } from '@nestjs/axios';
 import { MomoModule } from 'src/modules/momo/momo.module';
+import { VnpayModule } from 'src/modules/vnpay/vnpay.module';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { MomoModule } from 'src/modules/momo/momo.module';
     forwardRef(() => TripStopTimeModule),
     forwardRef(() => TicketModule),
     forwardRef(() => PaymentModule),
-    MomoModule,
+    VnpayModule,
   ],
   providers: [BookingService],
   controllers: [BookingController],

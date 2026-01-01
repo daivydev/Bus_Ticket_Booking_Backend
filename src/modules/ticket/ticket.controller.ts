@@ -43,6 +43,14 @@ export class TicketController {
     return this.ticketService.getById(id);
   }
 
+  @Get('user/:userId')
+  @HttpCode(HttpStatus.OK)
+  async getTicketsByUserId(
+    @Param('userId', ParseObjectIdPipe) userId: string,
+  ): Promise<TicketDocument[]> {
+    return this.ticketService.getTicketsByUser(userId);
+  }
+
   @Post()
   @Roles(Role.Admin)
   @HttpCode(HttpStatus.CREATED)
