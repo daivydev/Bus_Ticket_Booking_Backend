@@ -150,4 +150,32 @@ export class TicketService {
       console.warn(`No tickets found to update for Booking ID: ${bookingId}`);
     }
   }
+
+  async getTicketsByUser(userId: string): Promise<TicketDocument[]> {
+    // 1. Tìm tất cả các BookingId của người dùng này
+    console.log(userId);
+    const userBookings = await this.bookingService.getBookingsByUser(userId);
+    const userBookingIds = userBookings.map((b) => b._id);
+
+    if (userBookingIds.length === 0) {
+      return [];
+    }
+
+    // Tìm vé dựa trên danh sách BookingIds đó
+    return this.ticketModel
+      .find({ bookingId: { $in: userBookingIds } })
+      .populate({
+        path: 'bookingId',
+        populate: [
+          {
+            path: 'tripId',
+            populate: [{ path: 'routeId' }, { path: 'busId' }],
+          },
+          { path: 'pickupStopId' },
+          { path: 'dropoffStopId' },
+        ],
+      })
+      .sort({ createdAt: -1 })
+      .exec();
+  }
 }

@@ -19,7 +19,6 @@ export class Payment {
     type: MongooseSchema.Types.ObjectId,
     ref: Booking.name,
     required: true,
-    unique: true, // Đảm bảo mỗi Booking chỉ có 1 bản ghi Payment chính
   })
   bookingId: MongooseSchema.Types.ObjectId;
 
@@ -41,7 +40,13 @@ export class Payment {
   paymentStatus: PaymentStatus;
 
   // Mã tham chiếu giao dịch từ cổng thanh toán
-  @Prop({ type: String, maxlength: 100, unique: true, required: false })
+  @Prop({
+    type: String,
+    maxlength: 100,
+    unique: true,
+    sparse: true,
+    required: false,
+  })
   transactionRef: string;
 }
 
