@@ -16,15 +16,18 @@ import { TripService } from 'src/modules/trip/trip.service';
 import { UserService } from 'src/modules/user/user.service';
 import { TicketService } from 'src/modules/ticket/ticket.service';
 import { Bus } from 'src/modules/bus/bus.chema';
+import { CheckoutDto } from 'src/modules/booking/dto/Checkout.dto';
+import { MomoService } from 'src/modules/momo/momo.service';
+import { PaymentService } from 'src/modules/payment/payment.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { TicketStatus } from 'src/modules/ticket/ticket.schema';
+import { PaymentStatus } from 'src/modules/payment/payment.schema';
 
 // Interface này được định nghĩa để giúp TypeScript nhận ra trường busId đã được populate
 interface TripWithPopulatedBus {
+  _id: MongooseSchema.Types.ObjectId;
   busId: Bus & { _id: MongooseSchema.Types.ObjectId; totalSeats: number };
-  routeId: {
-    basePrice: number;
-    markup: number;
-    _id: MongooseSchema.Types.ObjectId;
-  };
+  base_price: number;
 }
 
 @Injectable()
@@ -36,13 +39,18 @@ export class BookingService {
     private stopService: BusStopService,
     private tripStopTimeService: TripStopTimeService,
     private ticketService: TicketService,
+    private momoService: MomoService,
+    private paymentService: PaymentService,
   ) {}
 
   async getAll(): Promise<BookingDocument[]> {
     return this.bookingModel
       .find()
       .populate('userId')
-      .populate({ path: 'tripId', populate: { path: 'busId' } })
+      .populate({
+        path: 'tripId',
+        populate: [{ path: 'busId' }, { path: 'routeId' }],
+      })
       .populate('pickupStopId')
       .populate('dropoffStopId')
       .exec();
@@ -96,14 +104,52 @@ export class BookingService {
     }
   }
 
-  async create(bookingData: CreateBookingDto): Promise<BookingDocument> {
+  @Cron(CronExpression.EVERY_MINUTE) // Quét mỗi phút một lần
+  async handleAutoCancellation() {
+    const now = new Date();
+    // 1. Tìm các Booking quá hạn mà vẫn đang ở trạng thái Pending
+    const expiredBookings = await this.bookingModel.find({
+      status: BookingStatus.Pending,
+      expiresAt: { $lte: now, $ne: null },
+    });
+
+    if (expiredBookings.length === 0) return;
+
+    for (const booking of expiredBookings) {
+      const bookingId = booking._id.toString();
+
+      // 2. Cập nhật Booking thành Cancelled
+      booking.status = BookingStatus.Cancelled;
+      await booking.save();
+
+      // 3. Cập nhật Ticket thành Cancelled
+      await this.ticketService.updateStatusByBooking(
+        bookingId,
+        TicketStatus.Cancelled,
+      );
+
+      // 4. Cập nhật Payment thành Failed
+      await this.paymentService.updateStatusByBooking(
+        bookingId,
+        PaymentStatus.Failed,
+      );
+
+      console.log(
+        `Booking ${bookingId} has been auto-cancelled due to timeout.`,
+      );
+    }
+  }
+
+  async create(
+    bookingData: CreateBookingDto,
+    numberOfTickets: number = 1,
+  ): Promise<BookingDocument> {
     const { userId, tripId, pickupStopId, dropoffStopId } = bookingData;
 
-    // Kiểm tra tồn tại Khóa ngoại (Đảm bảo TripService.getById có .populate('busId'))
     const [userExists, trip, pickupStopExists, dropoffStopExists] =
       await Promise.all([
         this.userService.exists(userId),
-        this.tripService.getById(tripId).catch(() => null), // Nếu trip không tồn tại, sẽ là null
+        this.tripService.getById(tripId).catch(() => null),
         this.stopService.exists(pickupStopId),
         this.stopService.exists(dropoffStopId),
       ]);
@@ -115,33 +161,37 @@ export class BookingService {
       throw new NotFoundException(`Trip ID (${tripId}) Not Found.`);
     }
 
-    // Kiểm tra ràng buộc Stops và Thời gian
     await this.validateStopsAndTiming(tripId, pickupStopId, dropoffStopId);
 
-    // Kiểm tra sức chứa (Seat Availability)
     const populatedTrip = trip as unknown as TripWithPopulatedBus;
 
+    // 1. Kiểm tra sức chứa
     const totalSeats = populatedTrip.busId.totalSeats;
     const bookedSeats = await this.ticketService.countBookedTickets(tripId);
 
-    if (bookedSeats >= totalSeats) {
-      throw new ConflictException('Chuyến đi đã đầy, không còn ghế trống.');
-    }
-
-    // Tính toán giá tiền chính xác (basePrice * markup) nếu cần
-    const basePrice = populatedTrip.routeId.basePrice;
-    const markup = populatedTrip.routeId.markup;
-    if (basePrice === undefined || markup === undefined) {
-      throw new BadRequestException(
-        'No basic price or markup information for the route was found.',
+    if (bookedSeats + numberOfTickets > totalSeats) {
+      throw new ConflictException(
+        `Xe đã đầy hoặc không đủ chỗ cho ${numberOfTickets} vé.`,
       );
     }
-    const calculatedTotalAmount = basePrice * (1 + markup);
-    bookingData.totalAmount = calculatedTotalAmount;
 
-    // Tạo Booking
+    // 2. Lấy base_price
+    const basePrice = trip.get('basePrice') || (trip as any).basePrice;
+    if (!basePrice) {
+      throw new BadRequestException(
+        'Base price information for this trip was not found.',
+      );
+    }
+
+    // 3. Tổng tiền = Giá gốc x Số lượng vé
+    bookingData.totalAmount = basePrice * numberOfTickets;
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
     try {
-      const newBooking = new this.bookingModel(bookingData);
+      const newBooking = new this.bookingModel({
+        ...bookingData,
+        expiresAt: expiresAt,
+        status: BookingStatus.Pending,
+      });
       return await newBooking.save();
     } catch (error) {
       if (error.code === 11000)
@@ -205,23 +255,58 @@ export class BookingService {
     id: string,
     status: BookingStatus,
   ): Promise<BookingDocument> {
+    const updateData: any = { status: status, booking_date: new Date() };
+    if (status === BookingStatus.Paid) {
+      updateData.$unset = { expiresAt: 1 };
+    }
     const updatedBooking = await this.bookingModel
-      .findByIdAndUpdate(
-        id,
-        { status: status, booking_date: new Date() },
-        { new: true, runValidators: true },
-      )
+      .findByIdAndUpdate(id, updateData, { new: true, runValidators: true })
       .exec();
 
     if (!updatedBooking) {
       throw new NotFoundException(`Booking with ID ${id} Not Found.`);
     }
 
-    // Nếu trạng thái chuyển sang Paid, bạn có thể thực hiện thêm các nghiệp vụ khác ở đây (ví dụ: gửi email xác nhận)
     return updatedBooking;
   }
 
   async getBookingsByTrip(tripId: string): Promise<BookingDocument[]> {
     return this.bookingModel.find({ tripId: tripId }).exec();
+  }
+
+  async processCheckout(checkoutData: CheckoutDto) {
+    const { tickets, paymentMethod, platform, ...bookingInfo } = checkoutData;
+    // 1. Lưu Booking (Pending)
+    const booking = await this.create(bookingInfo, tickets.length);
+    // 2. Lưu Tickets
+    for (const ticketData of tickets) {
+      await this.ticketService.create({
+        ...ticketData,
+        bookingId: booking._id.toString(),
+      });
+    }
+
+    // 3. Khởi tạo bản ghi Payment (Pending)
+    await this.paymentService.create({
+      bookingId: booking._id.toString(),
+      paymentMethod: paymentMethod,
+      amountPaid: booking.totalAmount,
+    });
+
+    // 4. Gọi MoMo và trả payUrl về cho Frontend
+    if (paymentMethod === 'momo') {
+      const momoResponse = await this.momoService.createPayment(
+        booking._id.toString(),
+        booking.totalAmount,
+        platform,
+      );
+      return {
+        payUrl: momoResponse.payUrl,
+        bookingId: booking._id,
+        expiresAt: (booking as any).expiresAt,
+      };
+    }
+
+    return { bookingId: booking._id };
   }
 }

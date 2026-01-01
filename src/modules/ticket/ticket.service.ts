@@ -137,4 +137,17 @@ export class TicketService {
     }
     return { message: 'Ticket status updated to Cancelled.' };
   }
+
+  async updateStatusByBooking(
+    bookingId: string,
+    status: TicketStatus,
+  ): Promise<void> {
+    const result = await this.ticketModel
+      .updateMany({ bookingId: bookingId }, { $set: { status: status } })
+      .exec();
+
+    if (result.matchedCount === 0) {
+      console.warn(`No tickets found to update for Booking ID: ${bookingId}`);
+    }
+  }
 }
