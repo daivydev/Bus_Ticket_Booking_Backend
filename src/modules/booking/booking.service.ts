@@ -22,6 +22,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { TicketStatus } from 'src/modules/ticket/ticket.schema';
 import { PaymentStatus } from 'src/modules/payment/payment.schema';
 import { VnpayService } from 'src/modules/vnpay/vnpay.service';
+import { randomBytes } from 'crypto';
 
 // Interface này được định nghĩa để giúp TypeScript nhận ra trường busId đã được populate
 interface TripWithPopulatedBus {
@@ -294,6 +295,7 @@ export class BookingService {
 
   //   return { bookingId: booking._id };
   // }
+  generateTicketCode = () => randomBytes(4).toString('hex').toUpperCase();
 
   async processCheckout(checkoutData: CheckoutDto) {
     const { tickets, paymentMethod, ...bookingInfo } = checkoutData;
@@ -308,6 +310,7 @@ export class BookingService {
           ...ticketData,
           bookingId: newId,
           status: TicketStatus.Valid,
+          ticketCode: `TCK-${randomBytes(4).toString('hex').toUpperCase()}`,
         });
       }
       // 3. Tạo Payment
