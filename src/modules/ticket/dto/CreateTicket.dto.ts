@@ -11,6 +11,7 @@ import {
 import { DeckType, Gender, TicketStatus } from '../ticket.schema';
 
 export class CreateTicketDto {
+  @IsOptional()
   @IsMongoId()
   @IsNotEmpty()
   bookingId: string;

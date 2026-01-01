@@ -17,6 +17,7 @@ async function bootstrap() {
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Các phương thức được phép
     credentials: true, // Cho phép truyền cookie và Authorization header
+    transform: true,
   });
   await app.listen(process.env.PORT ?? 3001);
 }

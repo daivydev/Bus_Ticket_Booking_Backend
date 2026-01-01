@@ -106,4 +106,23 @@ export class PaymentService {
   async delete(id: string): Promise<void> {
     throw new BadRequestException('Payment records cannot be deleted.');
   }
+
+  async updateStatusByBooking(
+    bookingId: string,
+    status: PaymentStatus,
+  ): Promise<void> {
+    const result = await this.paymentModel
+      .findOneAndUpdate(
+        { bookingId: bookingId },
+        { $set: { paymentStatus: status } },
+        { new: true },
+      )
+      .exec();
+
+    if (!result) {
+      console.warn(
+        `No payment record found to update for Booking ID: ${bookingId}`,
+      );
+    }
+  }
 }

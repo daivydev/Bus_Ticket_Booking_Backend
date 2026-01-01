@@ -55,6 +55,9 @@ export class Booking {
     required: true,
   })
   dropoffStopId: MongooseSchema.Types.ObjectId;
+  @Prop({ type: Date, default: null })
+  expiresAt: Date;
 }
 
 export const BookingSchema = SchemaFactory.createForClass(Booking);
+BookingSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
