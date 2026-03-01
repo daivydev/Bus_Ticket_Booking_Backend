@@ -19,11 +19,13 @@
     /* Khả năng tương thích và Kiểm soát lỗi */
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true, // Rất quan trọng để tránh lỗi chữ hoa/thường trên Vercel
+    "forceConsistentCasingInFileNames": true, // Tránh lỗi chữ hoa/thường trên Vercel
     "strict": true,
     "strictNullChecks": true,
     "noImplicitAny": false,
     "skipLibCheck": true,
+    "strictPropertyInitialization": false,
+    "useUnknownInCatchVariables": false,
     
     /* Cấu hình Output */
     "outDir": "./dist",
