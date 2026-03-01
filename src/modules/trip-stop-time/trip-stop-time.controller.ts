@@ -13,14 +13,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enums/roles.enum';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/modules/auth/roles.guard';
-import { CreateTripStopTimeDto } from 'src/modules/trip-stop-time/dto/CreateTripStopTime.dto';
-import { UpdateTripStopTimeDto } from 'src/modules/trip-stop-time/dto/UpdateTripStopTime.dto';
-import { TripStopTimeDocument } from 'src/modules/trip-stop-time/trip-stop-time.schema';
-import { TripStopTimeService } from 'src/modules/trip-stop-time/trip-stop-time.service';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Role } from '../../common/enums/roles.enum';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { CreateTripStopTimeDto } from './dto/CreateTripStopTime.dto';
+import { UpdateTripStopTimeDto } from './dto/UpdateTripStopTime.dto';
+import { TripStopTimeDocument } from './trip-stop-time.schema';
+import { TripStopTimeService } from './trip-stop-time.service';
 
 @Controller('trip-stop-times')
 @UseGuards(JwtAuthGuard, RolesGuard)

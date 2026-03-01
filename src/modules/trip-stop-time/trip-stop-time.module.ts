@@ -5,9 +5,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   TripStopTime,
   TripStopTimeSchema,
-} from 'src/modules/trip-stop-time/trip-stop-time.schema';
-import { TripModule } from 'src/modules/trip/trip.module';
-import { BusStopModule } from 'src/modules/bus-stop/bus-stop.module';
+} from '../trip-stop-time/trip-stop-time.schema';
+import { TripModule } from '../trip/trip.module';
+import { BusStopModule } from '../bus-stop/bus-stop.module';
 
 @Module({
   imports: [

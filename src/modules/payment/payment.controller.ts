@@ -15,10 +15,10 @@ import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/CreatePayment.dto';
 import { UpdatePaymentDto } from './dto/UpdatePayment.dto';
 import { PaymentDocument } from './payment.schema';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/modules/auth/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enums/roles.enum';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Role } from '../../common/enums/roles.enum';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
 
 @Controller('payments')

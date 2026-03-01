@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CityService } from 'src/modules/city/city.service';
-import { CreateRouteDto } from 'src/modules/trip-route/dto/CreateRouteDto.dto';
-import { UpdateRouteDto } from 'src/modules/trip-route/dto/UpdateRouteDto.dto';
-import { Route, RouteDocument } from 'src/modules/trip-route/trip-route.schema';
-import { Trip, TripDocument } from 'src/modules/trip/trip.schema';
+import { CityService } from '../city/city.service';
+import { CreateRouteDto } from './dto/CreateRouteDto.dto';
+import { UpdateRouteDto } from './dto/UpdateRouteDto.dto';
+import { Route, RouteDocument } from '../trip-route/trip-route.schema';
+import { Trip, TripDocument } from '../trip/trip.schema';
 
 @Injectable()
 export class TripRouteService {

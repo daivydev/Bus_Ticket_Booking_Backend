@@ -8,14 +8,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Trip, TripDocument } from './trip.schema';
 import { BusService } from '../bus/bus.service';
-import { TripRouteService } from 'src/modules/trip-route/trip-route.service';
-import { UpdateTripDto } from 'src/modules/trip/dto/UpdateTrip.dto';
-import { CreateTripDto } from 'src/modules/trip/dto/CreateTrip.dto';
+import { TripRouteService } from '../trip-route/trip-route.service';
+import { UpdateTripDto } from '../trip/dto/UpdateTrip.dto';
+import { CreateTripDto } from '../trip/dto/CreateTrip.dto';
 import {
   TripStopTime,
   TripStopTimeDocument,
-} from 'src/modules/trip-stop-time/trip-stop-time.schema';
-import { Booking, BookingDocument } from 'src/modules/booking/booking.schema';
+} from '../trip-stop-time/trip-stop-time.schema';
+import { Booking, BookingDocument } from '../booking/booking.schema';
 
 @Injectable()
 export class TripService {

@@ -4,11 +4,11 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UserService } from 'src/modules/user/user.service';
+import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { SignUpDto } from 'src/modules/auth/dto/sign-up.dto';
-import { User, UserDocument } from 'src/modules/user/user.schema';
+import { SignUpDto } from '../auth/dto/sign-up.dto';
+import { User, UserDocument } from '../user/user.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 

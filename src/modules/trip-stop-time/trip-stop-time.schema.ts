@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 import { Trip } from '../trip/trip.schema';
-import { BusStop } from 'src/modules/bus-stop/bus-stop.schema';
+import { BusStop } from '../bus-stop/bus-stop.schema';
 
 export type TripStopTimeDocument = HydratedDocument<TripStopTime>;
 

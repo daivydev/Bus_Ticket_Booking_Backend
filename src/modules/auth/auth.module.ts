@@ -4,10 +4,10 @@ import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
-import { UserModule } from 'src/modules/user/user.module';
+import { UserModule } from '../user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config'; // <<< THÊM
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from 'src/modules/user/user.schema';
+import { User, UserSchema } from '../user/user.schema';
 
 @Module({
   imports: [

@@ -1,5 +1,3 @@
-// src/auth/auth.controller.ts
-
 import {
   Controller,
   Post,
@@ -11,10 +9,10 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { LoginDto } from 'src/modules/auth/dto/sign-in.dto';
-import { CreateUserDto } from 'src/modules/user/dto/CreateUser.dto';
-import { UserService } from 'src/modules/user/user.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { LoginDto } from '../auth/dto/sign-in.dto';
+import { CreateUserDto } from '../user/dto/CreateUser.dto';
+import { UserService } from '../user/user.service';
 
 @Controller('auth')
 export class AuthController {

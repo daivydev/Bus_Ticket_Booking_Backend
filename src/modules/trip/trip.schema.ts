@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
-import { Bus } from 'src/modules/bus/bus.chema';
-import { Route } from 'src/modules/trip-route/trip-route.schema';
+import { Bus } from '../bus/bus.chema';
+import { Route } from '../trip-route/trip-route.schema';
 
 export type TripDocument = HydratedDocument<Trip>;
 

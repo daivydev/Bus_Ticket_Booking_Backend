@@ -17,10 +17,10 @@ import { TripRouteService } from './trip-route.service';
 import { CreateRouteDto } from './dto/CreateRouteDto.dto';
 import { UpdateRouteDto } from './dto/UpdateRouteDto.dto';
 import { Route } from './trip-route.schema';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/modules/auth/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enums/roles.enum';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Role } from '../../common/enums/roles.enum';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
 
 @Controller('routes')

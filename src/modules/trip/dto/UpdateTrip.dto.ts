@@ -10,7 +10,7 @@ import {
 import {
   CreateTripDto,
   IsArrivalAfterDepartureConstraint,
-} from 'src/modules/trip/dto/CreateTrip.dto';
+} from '../../../modules/trip/dto/CreateTrip.dto';
 
 export class UpdateTripDto extends PartialType(CreateTripDto) {
   @IsDateString()

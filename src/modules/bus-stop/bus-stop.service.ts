@@ -5,15 +5,15 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Booking, BookingDocument } from 'src/modules/booking/booking.schema';
-import { BusStop, BusStopDocument } from 'src/modules/bus-stop/bus-stop.schema';
-import { CreateBusStopDto } from 'src/modules/bus-stop/dto/CreateBusStop.dto';
-import { UpdateBusStopDto } from 'src/modules/bus-stop/dto/UpdateBusStop.dto';
-import { CityService } from 'src/modules/city/city.service';
+import { Booking, BookingDocument } from '../booking/booking.schema';
+import { BusStop, BusStopDocument } from '../bus-stop/bus-stop.schema';
+import { CreateBusStopDto } from '../bus-stop/dto/CreateBusStop.dto';
+import { UpdateBusStopDto } from '../bus-stop/dto/UpdateBusStop.dto';
+import { CityService } from '../city/city.service';
 import {
   TripStopTime,
   TripStopTimeDocument,
-} from 'src/modules/trip-stop-time/trip-stop-time.schema';
+} from '../trip-stop-time/trip-stop-time.schema';
 
 @Injectable()
 export class BusStopService {

@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Bus, BusDocument } from 'src/modules/bus/bus.chema';
-import { CreateBusDto } from 'src/modules/bus/dto/CreateBus.dto';
-import { UpdateBusDto } from 'src/modules/bus/dto/UpdateBus.dto';
-import { Trip, TripDocument } from 'src/modules/trip/trip.schema';
+import { Bus, BusDocument } from '../bus/bus.chema';
+import { CreateBusDto } from '../bus/dto/CreateBus.dto';
+import { UpdateBusDto } from '../bus/dto/UpdateBus.dto';
+import { Trip, TripDocument } from '../trip/trip.schema';
 
 @Injectable()
 export class BusService {

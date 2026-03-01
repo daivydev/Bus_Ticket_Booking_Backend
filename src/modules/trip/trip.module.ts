@@ -2,15 +2,15 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TripService } from './trip.service';
 import { TripController } from './trip.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Trip, TripSchema } from 'src/modules/trip/trip.schema';
-import { BusModule } from 'src/modules/bus/bus.module';
-import { TripRouteModule } from 'src/modules/trip-route/trip-route.module';
-import { TripStopTimeModule } from 'src/modules/trip-stop-time/trip-stop-time.module';
+import { Trip, TripSchema } from '../trip/trip.schema';
+import { BusModule } from '../bus/bus.module';
+import { TripRouteModule } from '../trip-route/trip-route.module';
+import { TripStopTimeModule } from '../trip-stop-time/trip-stop-time.module';
 import {
   TripStopTime,
   TripStopTimeSchema,
-} from 'src/modules/trip-stop-time/trip-stop-time.schema';
-import { Booking, BookingSchema } from 'src/modules/booking/booking.schema';
+} from '../trip-stop-time/trip-stop-time.schema';
+import { Booking, BookingSchema } from '../booking/booking.schema';
 
 @Module({
   imports: [

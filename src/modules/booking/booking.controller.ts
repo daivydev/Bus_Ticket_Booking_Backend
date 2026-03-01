@@ -17,17 +17,17 @@ import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/CreateBooking.dto';
 import { UpdateBookingDto } from './dto/UpdateBooking.dto';
 import { BookingDocument } from './booking.schema';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/modules/auth/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enums/roles.enum';
-import { CheckoutDto } from 'src/modules/booking/dto/Checkout.dto';
-import { BookingStatus } from 'src/common/enums/booking.enum';
-import { Public } from 'src/common/decorators/public.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Role } from '../../common/enums/roles.enum';
+import { CheckoutDto } from '../booking/dto/Checkout.dto';
+import { BookingStatus } from '../../common/enums/booking.enum';
+import { Public } from '../../common/decorators/public.decorator';
 import { Query, Req } from '@nestjs/common';
 import * as qs from 'qs';
 import * as crypto from 'crypto';
-import { VnpayService } from 'src/modules/vnpay/vnpay.service';
+import { VnpayService } from '../vnpay/vnpay.service';
 @Controller('bookings')
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
 @UseGuards(JwtAuthGuard, RolesGuard)

@@ -8,8 +8,8 @@ import {
   IsPhoneNumber,
   IsEnum,
 } from 'class-validator';
-import { Role } from 'src/common/enums/roles.enum';
-import { IsMatching } from 'src/util/validator/match.validator';
+import { Role } from '../../../common/enums/roles.enum';
+import { IsMatching } from '../../../util/validator/match.validator';
 
 export class CreateUserDto {
   // Họ và tên (Bắt buộc)

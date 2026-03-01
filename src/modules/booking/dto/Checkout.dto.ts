@@ -6,8 +6,8 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { CreateBookingDto } from 'src/modules/booking/dto/CreateBooking.dto';
-import { CreateTicketDto } from 'src/modules/ticket/dto/CreateTicket.dto';
+import { CreateBookingDto } from '../../booking/dto/CreateBooking.dto';
+import { CreateTicketDto } from '../../ticket/dto/CreateTicket.dto';
 import { OmitType } from '@nestjs/mapped-types';
 
 export class TicketCheckoutDto extends OmitType(CreateTicketDto, [

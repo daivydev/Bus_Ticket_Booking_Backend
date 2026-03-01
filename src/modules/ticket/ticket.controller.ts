@@ -17,10 +17,10 @@ import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dto/CreateTicket.dto';
 import { UpdateTicketDto } from './dto/UpdateTicket.dto';
 import { TicketDocument } from './ticket.schema';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/modules/auth/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enums/roles.enum';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Role } from '../../common/enums/roles.enum';
 
 @Controller('tickets')
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))

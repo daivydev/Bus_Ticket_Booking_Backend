@@ -15,13 +15,12 @@ import {
 } from '@nestjs/common';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
 import { TripService } from './trip.service';
-import { TripDocument } from './trip.schema';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/modules/auth/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enums/roles.enum';
-import { CreateTripDto } from 'src/modules/trip/dto/CreateTrip.dto';
-import { UpdateTripDto } from 'src/modules/trip/dto/UpdateTrip.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Role } from '../../common/enums/roles.enum';
+import { CreateTripDto } from './dto/CreateTrip.dto';
+import { UpdateTripDto } from './dto/UpdateTrip.dto';
 
 @Controller('trips')
 @UseGuards(JwtAuthGuard, RolesGuard)

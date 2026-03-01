@@ -10,9 +10,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Payment, PaymentDocument, PaymentStatus } from './payment.schema';
 import { BookingService } from '../booking/booking.service';
-import { BookingStatus } from 'src/common/enums/booking.enum';
-import { CreatePaymentDto } from 'src/modules/payment/dto/CreatePayment.dto';
-import { UpdatePaymentDto } from 'src/modules/payment/dto/UpdatePayment.dto';
+import { BookingStatus } from '../../common/enums/booking.enum';
+import { CreatePaymentDto } from '../payment/dto/CreatePayment.dto';
+import { UpdatePaymentDto } from '../payment/dto/UpdatePayment.dto';
 
 @Injectable()
 export class PaymentService {

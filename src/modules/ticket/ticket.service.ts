@@ -10,8 +10,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Ticket, TicketDocument, TicketStatus } from './ticket.schema';
 import { BookingService } from '../booking/booking.service';
-import { CreateTicketDto } from 'src/modules/ticket/dto/CreateTicket.dto';
-import { UpdateTicketDto } from 'src/modules/ticket/dto/UpdateTicket.dto';
+import { CreateTicketDto } from '../ticket/dto/CreateTicket.dto';
+import { UpdateTicketDto } from '../ticket/dto/UpdateTicket.dto';
 
 @Injectable()
 export class TicketService {

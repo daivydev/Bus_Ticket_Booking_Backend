@@ -6,22 +6,22 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Schema as MongooseSchema } from 'mongoose';
-import { BookingStatus } from 'src/common/enums/booking.enum';
-import { Booking, BookingDocument } from 'src/modules/booking/booking.schema';
-import { CreateBookingDto } from 'src/modules/booking/dto/CreateBooking.dto';
-import { UpdateBookingDto } from 'src/modules/booking/dto/UpdateBooking.dto';
-import { BusStopService } from 'src/modules/bus-stop/bus-stop.service';
-import { TripStopTimeService } from 'src/modules/trip-stop-time/trip-stop-time.service';
-import { TripService } from 'src/modules/trip/trip.service';
-import { UserService } from 'src/modules/user/user.service';
-import { TicketService } from 'src/modules/ticket/ticket.service';
-import { Bus } from 'src/modules/bus/bus.chema';
-import { CheckoutDto } from 'src/modules/booking/dto/Checkout.dto';
-import { PaymentService } from 'src/modules/payment/payment.service';
+import { BookingStatus } from '../../common/enums/booking.enum';
+import { Booking, BookingDocument } from '../booking/booking.schema';
+import { CreateBookingDto } from '../booking/dto/CreateBooking.dto';
+import { UpdateBookingDto } from '../booking/dto/UpdateBooking.dto';
+import { BusStopService } from '../bus-stop/bus-stop.service';
+import { TripStopTimeService } from '../trip-stop-time/trip-stop-time.service';
+import { TripService } from '../trip/trip.service';
+import { UserService } from '../user/user.service';
+import { TicketService } from '../ticket/ticket.service';
+import { Bus } from '../bus/bus.chema';
+import { CheckoutDto } from '../booking/dto/Checkout.dto';
+import { PaymentService } from '../payment/payment.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { TicketStatus } from 'src/modules/ticket/ticket.schema';
-import { PaymentStatus } from 'src/modules/payment/payment.schema';
-import { VnpayService } from 'src/modules/vnpay/vnpay.service';
+import { TicketStatus } from '../ticket/ticket.schema';
+import { PaymentStatus } from '../payment/payment.schema';
+import { VnpayService } from '../vnpay/vnpay.service';
 import { randomBytes } from 'crypto';
 
 // Interface này được định nghĩa để giúp TypeScript nhận ra trường busId đã được populate

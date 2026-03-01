@@ -2,10 +2,10 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TripRouteController } from './trip-route.controller';
 import { TripRouteService } from './trip-route.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Route, RouteSchema } from 'src/modules/trip-route/trip-route.schema';
-import { CityModule } from 'src/modules/city/city.module';
-import { TripModule } from 'src/modules/trip/trip.module';
-import { Trip, TripSchema } from 'src/modules/trip/trip.schema';
+import { Route, RouteSchema } from '../trip-route/trip-route.schema';
+import { CityModule } from '../city/city.module';
+import { TripModule } from '../trip/trip.module';
+import { Trip, TripSchema } from '../trip/trip.schema';
 
 @Module({
   imports: [

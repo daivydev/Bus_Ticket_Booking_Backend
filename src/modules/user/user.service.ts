@@ -5,9 +5,9 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateUserDto } from 'src/modules/user/dto/CreateUser.dto';
-import { UpdateUserDto } from 'src/modules/user/dto/UpdateUser.dto';
-import { User, UserDocument } from 'src/modules/user/user.schema';
+import { CreateUserDto } from './dto/CreateUser.dto';
+import { UpdateUserDto } from './dto/UpdateUser.dto';
+import { User, UserDocument } from './user.schema';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()

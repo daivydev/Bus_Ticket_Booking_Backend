@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { BusStop, BusStopDocument } from 'src/modules/bus-stop/bus-stop.schema';
-import { City, CityDocument } from 'src/modules/city/city.schema';
-import { CreateCityDto } from 'src/modules/city/dto/CreateCity.dto';
-import { UpdateCityDto } from 'src/modules/city/dto/UpdateCity.dto';
-import { Route, RouteDocument } from 'src/modules/trip-route/trip-route.schema';
+import { BusStop, BusStopDocument } from '../bus-stop/bus-stop.schema';
+import { City, CityDocument } from '../city/city.schema';
+import { CreateCityDto } from '../city/dto/CreateCity.dto';
+import { UpdateCityDto } from '../city/dto/UpdateCity.dto';
+import { Route, RouteDocument } from '../trip-route/trip-route.schema';
 
 @Injectable()
 export class CityService {

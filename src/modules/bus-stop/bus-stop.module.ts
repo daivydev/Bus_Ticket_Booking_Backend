@@ -2,14 +2,14 @@ import { forwardRef, Module } from '@nestjs/common';
 import { BusStopController } from './bus-stop.controller';
 import { BusStopService } from './bus-stop.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { BusStop, BusStopSchema } from 'src/modules/bus-stop/bus-stop.schema';
-import { CityModule } from 'src/modules/city/city.module';
-import { BusModule } from 'src/modules/bus/bus.module';
-import { Booking, BookingSchema } from 'src/modules/booking/booking.schema';
+import { BusStop, BusStopSchema } from '../bus-stop/bus-stop.schema';
+import { CityModule } from '../city/city.module';
+import { BusModule } from '../bus/bus.module';
+import { Booking, BookingSchema } from '../booking/booking.schema';
 import {
   TripStopTime,
   TripStopTimeSchema,
-} from 'src/modules/trip-stop-time/trip-stop-time.schema';
+} from '../trip-stop-time/trip-stop-time.schema';
 
 @Module({
   imports: [

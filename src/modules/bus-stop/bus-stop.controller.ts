@@ -13,14 +13,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enums/roles.enum';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/modules/auth/roles.guard';
-import { BusStop } from 'src/modules/bus-stop/bus-stop.schema';
-import { BusStopService } from 'src/modules/bus-stop/bus-stop.service';
-import { CreateBusStopDto } from 'src/modules/bus-stop/dto/CreateBusStop.dto';
-import { UpdateBusStopDto } from 'src/modules/bus-stop/dto/UpdateBusStop.dto';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Role } from '../../common/enums/roles.enum';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { BusStop } from '../bus-stop/bus-stop.schema';
+import { BusStopService } from '../bus-stop/bus-stop.service';
+import { CreateBusStopDto } from '../bus-stop/dto/CreateBusStop.dto';
+import { UpdateBusStopDto } from '../bus-stop/dto/UpdateBusStop.dto';
 
 @Controller('bus-stops')
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))

@@ -13,14 +13,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enums/roles.enum';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/modules/auth/roles.guard';
-import { City } from 'src/modules/city/city.schema';
-import { CityService } from 'src/modules/city/city.service';
-import { CreateCityDto } from 'src/modules/city/dto/CreateCity.dto';
-import { UpdateCityDto } from 'src/modules/city/dto/UpdateCity.dto';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Role } from '../../common/enums/roles.enum';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { City } from './city.schema';
+import { CityService } from './city.service';
+import { CreateCityDto } from '../city/dto/CreateCity.dto';
+import { UpdateCityDto } from '../city/dto/UpdateCity.dto';
 
 @Controller('cities')
 @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
